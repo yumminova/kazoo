@@ -13,24 +13,17 @@ Key | Description | Type | Default | Required
 `featurecode` | When the callflow is used as a featurecode this object tracks the intended match of the pattern and name of the feature | `object` |   | `false`
 `featurecode.name` |   | `string(1..128)` |   | `false`
 `featurecode.number` |   | `string(1..30)` |   | `false`
-`flow` | A callflow node defines a module to execute, data to provide to that module, and zero or more children to branch to | [#/definitions/callflows.action](#callflowsaction) |   | `false`
+`flow` | A callflow node defines a module to execute, data to provide to that module, and one or more children to branch to | `object` |   | `true`
+`flow.children` | Children callflows | `object` | `null` | `false`
+`flow.data` | The data/arguments of the callflow module | `object` | `null` | `true`
+`flow.module` | The name of the callflow module to excute at this node | `string(1..64)` |   | `true`
+`flow.variables` | A map of data object keys to custom KV keys whose values should replace the values in the data object | `object` |   | `false`
 `metaflow` | Actions applied to a call outside of the normal callflow, initiated by the caller(s) | [#/definitions/metaflows](#metaflows) |   | `false`
 `numbers` | A list of static numbers that the callflow should execute for | `array(string(1..36))` | `[]` | `false`
 `numbers.[]` |   | `string` |   | `false`
 `patterns` | A list of regular expressions that the callflow should execute for, with optional capture groups | `array(string(1..))` | `[]` | `false`
 `patterns.[]` |   | `string` |   | `false`
 
-
-##### callflows.action
-
-Call flows describe steps to take in order to process a phone call. They are trees of information related to a phone call such as "answer, play file, record file" etc. that are logically grouped together and ordered.
-
-Key | Description | Type | Default | Required
---- | ----------- | ---- | ------- | --------
-`children` | Children callflows | `object` |   | `false`
-`children./.+/` |   | [#/definitions/callflows.action](#callflowsaction) |   | `false`
-`data` | The data/arguments of the callflow module | `object` | `{}` | `true`
-`module` | The name of the callflow module to excute at this node | `string(1..64)` |   | `true`
 
 ##### metaflow
 

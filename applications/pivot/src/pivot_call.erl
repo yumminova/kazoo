@@ -38,18 +38,18 @@
                ,cdr_uri :: api_binary()
                ,request_format = <<"twiml">> :: api_binary()
                ,method = 'get' :: http_method()
-               ,call :: kapps_call:call()
+               ,call :: kapps_call:call() | 'undefined'
                ,request_id :: kz_http:req_id()
-               ,request_params :: kz_json:object()
-               ,response_code :: ne_binary()
-               ,response_headers :: binaries() | ne_binary()
+               ,request_params :: api_object()
+               ,response_code :: api_ne_binary()
+               ,response_headers :: binaries() | api_ne_binary()
                ,response_body = <<>> :: binary()
-               ,response_content_type :: binary()
-               ,response_pid :: pid() %% pid of the processing of the response
+               ,response_content_type :: api_binary()
+               ,response_pid :: api_pid() %% pid of the processing of the response
                ,response_event_handlers = [] :: pids()
-               ,response_ref :: reference() %% monitor ref for the pid
+               ,response_ref :: api_reference() %% monitor ref for the pid
                ,debug = 'false' :: boolean()
-               ,requester_queue :: api_binary()
+               ,requester_queue :: api_ne_binary()
                }).
 -type state() :: #state{}.
 
@@ -148,7 +148,7 @@ init([Call, JObj]) ->
     new_request(self(), VoiceUri, Method, BaseParams),
 
     {'ok'
-    ,#state{cdr_uri=kz_json:get_value(<<"CDR-URI">>, JObj)
+    ,#state{cdr_uri=kz_json:get_ne_binary_value(<<"CDR-URI">>, JObj)
            ,call=kzt_util:increment_iteration(Call)
            ,request_format=ReqFormat
            ,debug=kz_json:is_true(<<"Debug">>, JObj, 'false')
@@ -583,7 +583,7 @@ maybe_debug_resp('true', Call, StatusCode, RespHeaders, RespBody) ->
                ).
 
 -spec debug_error(kapps_call:call(), [jesse_error:error_reason()], binary()) -> 'ok'.
-debug_error(Call, Errors, RespBody) ->
+debug_error(Call, Errors, RespBody) when is_list(Errors) ->
     JObj = lists:foldl(fun error_to_jobj/2, kz_json:new(), Errors),
     store_debug(Call
                ,kz_json:from_list([{<<"schema_errors">>, JObj}
@@ -591,6 +591,8 @@ debug_error(Call, Errors, RespBody) ->
                                   ])
                ).
 
+-spec debug_json_error(kapps_call:call(), ne_binary(), binary(), binary(), binary()) ->
+                              'ok'.
 debug_json_error(Call, Msg, Before, After, RespBody) ->
     JObj = kz_json:from_list([{<<"resp_body">>, RespBody}
                              ,{<<"json_errors">>
@@ -625,7 +627,12 @@ store_debug(Call, DebugJObj) ->
                                      ,{'now', kz_time:current_tstamp()}
                                      ]
                                     ),
-    case kazoo_modb:save_doc(AccountModDb, JObj) of
+
+    save_debug(AccountModDb, JObj).
+
+-spec save_debug(ne_binary(), kz_json:object()) -> 'ok'.
+save_debug(AccountMODB, JObj) ->
+    case kazoo_modb:save_doc(AccountMODB, JObj) of
         {'ok', _Saved} ->
             lager:debug("saved debug doc: ~p", [_Saved]);
         {'error', _E} ->
