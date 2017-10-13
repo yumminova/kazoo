@@ -28,6 +28,7 @@ DEPS = amqp_client \
 	lager \
 	lager_syslog \
 	meck \
+	meta \
 	nklib \
 	plists \
 	poolboy \
@@ -97,3 +98,5 @@ dep_reloader = git https://github.com/lazedo/reloader v0.1
 dep_parse_trans = git https://github.com/lazedo/parse_trans
 
 dep_horse = git https://github.com/ninenines/horse
+
+dep_meta = git https://github.com/lazedo/meta 0.0.1
