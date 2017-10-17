@@ -92,8 +92,13 @@
                ,fetch_id :: api_binary()
                ,controller_q :: api_ne_binary()
                ,controller_p :: api_pid()
+<<<<<<< Upstream, based on 2600hz/master
                ,control_q :: api_ne_binary()
                ,initial_ccvs :: kz_json:object()
+=======
+               ,control_q :: api_binary()
+               ,initial_ccvs :: api_object()
+>>>>>>> f201489 address state record
                ,node_down_tref :: api_reference()
                ,current_cmd_uuid :: api_binary()
                }).
