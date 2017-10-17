@@ -2,17 +2,7 @@
 
 -define(FS_GENERATED_EVENT_FILTERS
        ,[<<"Acquired-UUID">>
-        ,<<"Auth-Realm">>
-        ,<<"Call-Direction">>
-        ,<<"Caller-Destination-Number">>
-        ,<<"Channel-Presence-ID">>
-        ,<<"Event-Name">>
         ,<<"Event-Subclass">>
-        ,<<"Hunt-Destination-Number">>
-        ,<<"Other-Leg-ANI">>
-        ,<<"Other-Leg-Callee-ID-Number">>
-        ,<<"Other-Leg-Caller-ID-Number">>
-        ,<<"Other-Leg-RDNIS">>
         ,<<"Resigning-UUID">>
         ,<<"X-AUTH-IP">>
         ,<<"X-AUTH-PORT">>
