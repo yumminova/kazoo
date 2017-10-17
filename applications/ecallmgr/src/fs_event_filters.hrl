@@ -2,7 +2,46 @@
 
 -define(FS_GENERATED_EVENT_FILTERS
        ,[<<"Acquired-UUID">>
+        ,<<"Application">>
+        ,<<"Application-Data">>
+        ,<<"Application-Logical-Direction">>
+        ,<<"Application-Response">>
+        ,<<"Bridge-A-Unique-ID">>
+        ,<<"Bridge-B-Unique-ID">>
+        ,<<"Call-Direction">>
+        ,<<"Call-ID">>
+        ,<<"Caller-Callee-ID-Name">>
+        ,<<"Caller-Callee-ID-Number">>
+        ,<<"Caller-Caller-ID-Name">>
+        ,<<"Caller-Caller-ID-Number">>
+        ,<<"Caller-Channel-Created-Time">>
+        ,<<"Caller-Destination-Number">>
+        ,<<"Caller-Unique-ID">>
+        ,<<"Channel-Call-State">>
+        ,<<"Channel-Call-UUID">>
+        ,<<"Channel-Name">>
+        ,<<"Channel-Presence-ID">>
+        ,<<"Channel-State">>
+        ,<<"DTMF-Digit">>
+        ,<<"DTMF-Duration">>
+        ,<<"Detected-Fax-Tone">>
+        ,<<"Detected-Tone">>
+        ,<<"Event-Date-Timestamp">>
+        ,<<"Event-Name">>
         ,<<"Event-Subclass">>
+        ,<<"FreeSWITCH-Hostname">>
+        ,<<"Hangup-Cause">>
+        ,<<"Hunt-Callee-ID-Number">>
+        ,<<"Hunt-Destination-Number">>
+        ,<<"Other-Leg-Call-ID">>
+        ,<<"Other-Leg-Callee-ID-Number">>
+        ,<<"Other-Leg-Caller-ID-Name">>
+        ,<<"Other-Leg-Caller-ID-Number">>
+        ,<<"Other-Leg-Channel-Name">>
+        ,<<"Other-Leg-Destination-Number">>
+        ,<<"Other-Leg-Direction">>
+        ,<<"Other-Leg-Unique-ID">>
+        ,<<"Record-File-Path">>
         ,<<"Resigning-UUID">>
         ,<<"X-AUTH-IP">>
         ,<<"X-AUTH-PORT">>
