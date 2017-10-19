@@ -99,12 +99,9 @@
         ,?KEY_B_LEG_EVENTS
         ,?KEY_CALL_ID
         ,?KEY_CALL_ID
-<<<<<<< Upstream, based on 2600hz/master
-=======
         ,?KEY_CONTROL_QUEUE
         ,?KEY_CONTROL_PID
         ,?KEY_CCVS
->>>>>>> 56d6d46 create api_control_q() and handles in applications
         ,?KEY_CAVS
         ,?KEY_CCVS
         ,?KEY_CONTROL_QUEUE
