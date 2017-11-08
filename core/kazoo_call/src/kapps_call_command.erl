@@ -42,7 +42,7 @@
 -export([answer/1, answer_now/1
         ,hangup/1, hangup/2
         ,break/1
-        ,queued_hangup/1
+        ,queued_hangup/1, queued_hangup/2
         ,set/3, set/4, set_terminators/2
         ,fetch/1, fetch/2
         ]).
@@ -955,6 +955,7 @@ break(Call) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec queued_hangup(kapps_call:call()) -> 'ok'.
+-spec queued_hangup(kapps_call:call(), api_ne_binary()) -> 'ok'.
 -spec hangup(kapps_call:call()) -> 'ok'.
 -spec hangup(boolean(), kapps_call:call()) -> 'ok'.
 
@@ -970,7 +971,13 @@ hangup(Call) ->
     send_command(Command, Call).
 
 queued_hangup(Call) ->
-    Command = [{<<"Application-Name">>, <<"hangup">>}],
+    queued_hangup(Call, 'undefined').
+
+queued_hangup(Call, Cause) ->
+    Command = props:filter_undefined(
+                [{<<"Application-Name">>, <<"hangup">>}
+                ,{<<"Hangup-Cause">>, Cause}
+                ]),
     send_command(Command, Call).
 
 hangup(OtherLegOnly, Call) when is_boolean(OtherLegOnly) ->

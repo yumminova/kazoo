@@ -906,13 +906,7 @@ get_pid(_) -> 'undefined'.
 hangup_call(Call) ->
     hangup_call(Call, 'undefined').
 hangup_call(Call, Cause) ->
-    Cmd = [{<<"Event-Name">>, <<"command">>}
-          ,{<<"Event-Category">>, <<"call">>}
-          ,{<<"Application-Name">>, <<"hangup">>}
-          ,{<<"Hangup-Cause">>, Cause}
-          ,{<<"Insert-At">>, <<"tail">>}
-          ],
-    send_command(Cmd, kapps_call:control_queue_direct(Call), kapps_call:call_id_direct(Call)).
+    kapps_call_command:queued_hangup(kapps_call:clear_helpers(Call), Cause).
 
 -spec handle_channel_pivoted(server_ref(), api_pid_ref(), kz_call_event:doc(), kapps_call:call()) -> 'ok'.
 handle_channel_pivoted(Self, PidRef, JObj, Call) ->
