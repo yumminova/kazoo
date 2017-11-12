@@ -1252,7 +1252,6 @@ handle_event_info(CallId, JObj, #state{call_id=CallId}=State) ->
         <<"CHANNEL_REPLACED">> ->
             handle_replaced(JObj, State);
         <<"CHANNEL_EXECUTE">> when Application =:= <<"redirect">> ->
-            gen_server:cast(self(), {'channel_redirected', JObj}),
             {'stop', 'normal', State};
         _Else ->
             {'noreply', State}
