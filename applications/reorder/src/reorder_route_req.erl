@@ -71,7 +71,8 @@ send_unknown_number_response(JObj, Q, Reconcilable) ->
     ErrorCode = kapps_config:get_binary(?APP_NAME, <<"unknown-error-code">>, <<"604">>),
     ErrorMsg = kapps_config:get_binary(?APP_NAME, <<"unknown-error-message">>, <<"Nope Nope Nope">>),
     lager:debug("sending unknown number response: ~s ~s", [ErrorCode, ErrorMsg]),
-    Resp = [{<<"Msg-ID">>, kz_json:get_value(<<"Msg-ID">>, JObj)}
+    Resp = [{?KEY_MSG_ID, kz_api:msg_id(JObj)}
+           ,{?KEY_REPLY_TO_PID, kz_api:from_pid(JObj)}
            ,{<<"Method">>, <<"error">>}
            ,{<<"Route-Error-Code">>, ErrorCode}
            ,{<<"Route-Error-Message">>, ErrorMsg}
