@@ -15,6 +15,7 @@ Key | Description | Type | Default | Required
 `delay` | How long to delay ringing the device, in seconds | `integer()` | `0` | `false`
 `id` | Device ID | `string()` |   | `false`
 `static_invite` | Override the SIP Username | `string()` |   | `false`
+`strategy` |   | `string()` | `simultaneous` | `false`
 `suppress_clid` | Suppress sending caller ID | `boolean()` |   | `false`
 `timeout` | Time, in seconds, to wait for device to bridge | `integer()` | `0` | `false`
 
