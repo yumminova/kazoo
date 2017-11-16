@@ -29,8 +29,8 @@ handle(Data, Call) ->
             lager:info("completed successful bridge to the device"),
             cf_exe:stop(Call);
         {'fail', _}=Reason -> maybe_handle_bridge_failure(Reason, Call);
-        {'error', timeout} ->
-            lager:info("timeout bridging to the device"),
+        {'error', Reason} when is_atom(Reason) ->
+            lager:info("error '~s' bridging to the device", [Reason]),
             cf_exe:continue(Call);
         {'error', _R} ->
             lager:info("error bridging to device: ~s"
@@ -57,6 +57,7 @@ maybe_handle_bridge_failure(Reason, Call) ->
 bridge_to_endpoints(Data, Call) ->
     EndpointId = kz_json:get_ne_binary_value(<<"id">>, Data),
     Params = kz_json:set_value(<<"source">>, kz_term:to_binary(?MODULE), Data),
+    Strategy = kz_json:get_ne_binary_value(<<"strategy">>, Data, <<"simultaneous">>),
     case kz_endpoint:build(EndpointId, Params, Call) of
         {'error', _}=E -> E;
         {'ok', Endpoints} ->
@@ -64,7 +65,7 @@ bridge_to_endpoints(Data, Call) ->
             Timeout = kz_json:get_integer_value(<<"timeout">>, Data, ?DEFAULT_TIMEOUT_S),
             IgnoreEarlyMedia = kz_endpoints:ignore_early_media(Endpoints),
 
-            kapps_call_command:b_bridge(Endpoints, Timeout, kapi_dialplan:dial_method_single(), IgnoreEarlyMedia
+            kapps_call_command:b_bridge(Endpoints, Timeout, Strategy, IgnoreEarlyMedia
                                        ,'undefined', 'undefined', <<"false">>, FailOnSingleReject, Call
                                        )
     end.
