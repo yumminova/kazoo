@@ -869,19 +869,16 @@ default_object(?NE_BINARY=SchemaId) ->
     {'ok', Schema} = load(SchemaId),
     default_object(Schema);
 default_object(Schema) ->
-    Flat = flatten(Schema),
-
-    FlatDefault = default_properties(Flat),
-    kz_json:expand(FlatDefault).
-
--spec default_properties(kz_json:flat_object()) -> kz_json:flat_object().
-default_properties(Flat) ->
-    kz_json:filtermap(fun(Keys, Value) ->
-                              <<"default">> =:= lists:last(Keys)
-                                  andalso {'true', {lists:droplast(Keys), Value}}
-                      end
-                      ,Flat
-                     ).
+    try validate(Schema, kz_json:new()) of
+        {'ok', JObj} -> JObj;
+        {'error', Err} ->
+            lager:debug("schema has errors : ~p ", [Err]),
+            kz_json:new()
+    catch
+        _Ex:_Err ->
+            lager:debug("exception getting schema default ~p : ~p", [_Ex, _Err]),
+            kz_json:new()
+    end.
 
 -spec filtering_list(kz_json:object()) -> list(kz_json:keys() | []).
 filtering_list(Schema) ->

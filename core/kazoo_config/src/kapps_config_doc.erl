@@ -39,7 +39,7 @@ get_node(Config, Node) ->
 -spec apply_default_values(kz_json:object(), ne_binary(), kz_json:object()) -> kz_json:object().
 apply_default_values(Config, Node, Default) ->
     NodeValue = get_node(Config, Node),
-    kz_json:set_value(Node, kz_json:merge(Default, NodeValue), Config).
+    kz_json:set_value(Node, kz_json:merge_recursive(Default, NodeValue), Config).
 
 -spec apply_default_node(kz_json:object()) -> kz_json:object().
 apply_default_node(Config) ->
@@ -87,10 +87,12 @@ stored_config(Id, Keys) ->
     Default = kz_json:get_value(?DEFAULT, Config, kz_json:new()),
     lists:foldl(fun(K,A) -> apply_default_values(A, K, Default) end, Config, Keys).
 
--spec config_with_default_node(ne_binary()) -> kz_json:object().
-config_with_default_node(Id) ->
+-spec config_with_default_node(ne_binary() | kz_json:object()) -> kz_json:object().
+config_with_default_node(?NE_BINARY = Id) ->
     Config = get_config(Id),
-    apply_default_values(Config, ?DEFAULT, schema_defaults(Id)).
+    apply_default_values(Config, ?DEFAULT, schema_defaults(Id));
+config_with_default_node(JObj) ->
+    apply_default_values(JObj, ?DEFAULT, schema_defaults(kz_doc:id(JObj))).
 
 -spec diff_from_default(ne_binary(), kz_json:object()) -> kz_json:object().
 diff_from_default(Id, JObj) ->

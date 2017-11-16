@@ -499,11 +499,15 @@ get_zone_value(Category, _Node, Keys, Default, JObj) ->
 
 -spec get_default_value(config_category(), config_key(), Default, kz_json:object()) ->
                                Default | _.
+get_default_value(_Category, [?KEY_DEFAULT | Keys], Default, JObj) ->
+    case kz_json:get_value([?KEY_DEFAULT | Keys], JObj) of
+        'undefined' -> Default;
+        Else -> Else
+    end;
 get_default_value(Category, Keys, Default, JObj) ->
     case kz_json:get_value([?KEY_DEFAULT | Keys], JObj) of
         'undefined' when Default /= 'undefined' ->
-            lager:debug("setting default for ~s ~p: ~p", [Category, Keys, Default]),
-            _ = set_default(Category, Keys, Default),
+            lager:debug("returning default for ~s ~p: ~p : ~p", [Category, Keys, Default, JObj]),
             Default;
         Else -> Else
     end.
@@ -664,9 +668,14 @@ update_category(Category, JObj, PvtFields) ->
         {'error', 'conflict'} ->
             lager:debug("conflict saving ~s, merging and saving", [Category]),
             {'ok', Updated} = kz_datamgr:open_doc(?KZ_CONFIG_DB, Category),
-            Merged = kz_json:merge_jobjs(Updated, kz_doc:public_fields(JObj)),
+            Merged = kz_json:merge_jobjs(Updated, kz_doc:public_fields(JObj, 'false')),
             lager:debug("updating from ~s to ~s", [kz_doc:revision(JObj), kz_doc:revision(Merged)]),
-            update_category(Category, Merged, PvtFields)
+            NewPvtFields = case PvtFields of
+                               'undefined' -> PvtFields;
+                               PvtFields -> kz_json:delete_key(<<"_rev">>, PvtFields)
+                           end,
+            update_category(Category, Merged, NewPvtFields);
+        {'error', 'timeout'} -> {'ok', JObj}
     end.
 
 %% @private
@@ -824,9 +833,15 @@ get_category(_, _) ->
     {'error', 'not_found'}.
 -else.
 get_category(Category, 'true') ->
-    kz_datamgr:open_cache_doc(?KZ_CONFIG_DB, Category, [{'cache_failures', ['not_found']}]);
+    case kz_datamgr:open_cache_doc(?KZ_CONFIG_DB, Category, [{'cache_failures', ['not_found']}]) of
+        {'ok', JObj} -> {'ok', kapps_config_doc:config_with_default_node(JObj)};
+        _Other -> _Other
+    end;
 get_category(Category, 'false') ->
-    kz_datamgr:open_doc(?KZ_CONFIG_DB, Category).
+    case kz_datamgr:open_doc(?KZ_CONFIG_DB, Category) of
+        {'ok', JObj} -> {'ok', kapps_config_doc:config_with_default_node(JObj)};
+        _Other -> _Other
+    end.
 -endif.
 
 %%--------------------------------------------------------------------
