@@ -861,8 +861,7 @@ flatten_prop(Path, ?JSON_WRAPPER(L) = Value) when is_list(L) ->
     case lists:last(Path) of
         <<"default">> -> [{Path, Value}];
         _ -> [{Path ++ [K], V} || {K,V} <- L]
-    end;
-flatten_prop(Path, V) -> [{Path, V}].
+    end.
 
 -spec default_object(ne_binary() | kz_json:object()) -> kz_json:object().
 default_object(?NE_BINARY=SchemaId) ->

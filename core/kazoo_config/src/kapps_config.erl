@@ -674,8 +674,7 @@ update_category(Category, JObj, PvtFields) ->
                                'undefined' -> PvtFields;
                                PvtFields -> kz_json:delete_key(<<"_rev">>, PvtFields)
                            end,
-            update_category(Category, Merged, NewPvtFields);
-        {'error', 'timeout'} -> {'ok', JObj}
+            update_category(Category, Merged, NewPvtFields)
     end.
 
 %% @private
