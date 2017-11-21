@@ -198,7 +198,7 @@ flush_node(Node) ->
 
 -spec new(channel()) -> 'ok'.
 new(#channel{}=Channel) ->
-    gen_server:call(?SERVER, {'channel', Channel}).
+    gen_server:call(?SERVER, {'new_channel', Channel}).
 
 -spec destroy(ne_binary(), atom()) -> 'ok'.
 destroy(UUID, Node) ->
@@ -206,7 +206,7 @@ destroy(UUID, Node) ->
 
 -spec update(ne_binary(), channel()) -> 'ok'.
 update(UUID, Channel) ->
-    gen_server:call(?SERVER, {'channel', UUID, Channel}).
+    gen_server:call(?SERVER, {'update_channel', UUID, Channel}).
 
 -spec update(ne_binary(), pos_integer(), any()) -> 'ok'.
 update(UUID, Key, Value) ->
@@ -435,7 +435,11 @@ start_cleanup_ref() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec handle_call(any(), pid_ref(), state()) -> handle_call_ret_state(state()).
-handle_call({'channel', Channel}, _, State) ->
+handle_call({'new_channel', Channel}, _, State) ->
+    ets:insert(?CHANNELS_TBL, Channel),
+    {'reply', 'ok', State};
+handle_call({'update_channel', UUID, Channel}, _, State) ->
+    lager:debug("updating channel ~s", [UUID]),
     ets:insert(?CHANNELS_TBL, Channel),
     {'reply', 'ok', State};
 handle_call({'channel_updates', _UUID, []}, _, State) ->
