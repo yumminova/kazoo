@@ -504,11 +504,9 @@ get_default_value(_Category, [?KEY_DEFAULT | Keys], Default, JObj) ->
         'undefined' -> Default;
         Else -> Else
     end;
-get_default_value(Category, Keys, Default, JObj) ->
+get_default_value(_Category, Keys, Default, JObj) ->
     case kz_json:get_value([?KEY_DEFAULT | Keys], JObj) of
-        'undefined' when Default /= 'undefined' ->
-            lager:debug("returning default for ~s ~p: ~p : ~p", [Category, Keys, Default, JObj]),
-            Default;
+        'undefined' when Default /= 'undefined' -> Default;
         Else -> Else
     end.
 

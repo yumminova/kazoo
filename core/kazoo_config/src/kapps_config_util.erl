@@ -117,8 +117,12 @@ system_config_document_schema(Id) ->
     Flat = [
             {[<<"$schema">>],<<"http://json-schema.org/draft-04/schema#">>}
            ,{[<<"id">>], <<"system_config">>}
-           ,{[<<"patternProperties">>, <<".+">>, <<"$ref">>], system_schema_name(Id)}
-           ,{[<<"patternProperties">>, <<".+">>, <<"type">>], <<"object">>}
            ,{[<<"type">>], <<"object">>}
+           ,{[<<"properties">>, <<"id">>, <<"type">>], <<"string">>}
+           ,{[<<"properties">>, <<"default">>, <<"type">>], <<"object">>}
+           ,{[<<"properties">>, <<"default">>, <<"$ref">>], system_schema_name(Id)}
+           ,{[<<"properties">>, <<"default">>, <<"default">>], kz_json:new()}
+           ,{[<<"patternProperties">>, <<"(?!id\b)\b\w+">>, <<"$ref">>], system_schema_name(Id)}
+           ,{[<<"patternProperties">>, <<"(?!id\b)\b\w+">>, <<"type">>], <<"object">>}
            ],
     kz_json:expand(kz_json:from_list(Flat)).
