@@ -1529,7 +1529,7 @@ register_view(Classification, View) ->
     App = kz_util:calling_app(),
     register_view(Classification, kz_term:to_atom(App, 'true'), View).
 
--spec register_view(ne_binary() | db_classification(), atom(), view_listing()) ->
+-spec register_view(ne_binary() | db_classification(), atom(), view_listing() | string() | ne_binary()) ->
                            {'ok', kz_json:object()} |
                            data_error().
 register_view(Classification, App, {<<"_design/", Name/binary>>, View}) ->
@@ -1543,7 +1543,9 @@ register_view(Classification, App, {<<"_design/", Name/binary>>, View}) ->
              ,{<<"Name">>, Name}
              ,{<<"pvt_type">>, <<"view_definition">>}
              ],
-    update_doc(?KZ_DATA_DB, DocId, Update, Create).
+    update_doc(?KZ_DATA_DB, DocId, Update, Create);
+register_view(Classification, App, ViewName) ->
+    register_view(Classification, App, kzs_util:get_view_json(App, ViewName)).
 
 -spec register_views_from_folder(ne_binary() | db_classification()) -> 'ok'.
 register_views_from_folder(Classification) ->
