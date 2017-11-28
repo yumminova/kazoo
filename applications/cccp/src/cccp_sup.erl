@@ -21,7 +21,6 @@
 -define(CHILDREN, [?SUPER('cccp_platform_sup')
                   ,?SUPER('cccp_callback_sup')
                   ,?WORKER('cccp_listener')
-                  ,?WORKER('cccp_maint_listener')
                   ]).
 
 %% ===================================================================
