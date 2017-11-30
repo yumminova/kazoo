@@ -775,7 +775,9 @@ context(JObj, Props) ->
 %%%-------------------------------------------------------------------
 %% XML record creators and helpers
 %%%-------------------------------------------------------------------
--spec acl_node_el(xml_attrib_value(), xml_attrib_value()) -> xml_el().
+-spec acl_node_el(xml_attrib_value(), xml_attrib_value()) -> xml_el() | xml_els().
+acl_node_el(Type, CIDRs) when is_list(CIDRs) ->
+    [acl_node_el(Type, CIDR) || CIDR <- CIDRs];
 acl_node_el(Type, CIDR) ->
     #xmlElement{name='node'
                ,attributes=[xml_attrib('type', Type)
@@ -1101,7 +1103,11 @@ room_el(Name, Status) ->
                            ]
                }.
 
--spec prepend_child(xml_el(), xml_el()) -> xml_el().
+-spec prepend_child(xml_el(), xml_el() | xml_els()) -> xml_el().
+prepend_child(#xmlElement{}=El, Children) when is_list(Children) ->
+    lists:foldl(fun(C, #xmlElement{content=Contents}=E) ->
+                        E#xmlElement{content=[C|Contents]}
+                end, El, Children);
 prepend_child(#xmlElement{content=Contents}=El, Child) ->
     El#xmlElement{content=[Child|Contents]}.
 
