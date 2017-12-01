@@ -22,7 +22,7 @@
 
 -define(SERVER, ?MODULE).
 
--type state() :: #{}.
+-type state() :: map().
 
 %%%===================================================================
 %%% API
@@ -192,7 +192,7 @@ sbc_acls(Nodes) ->
 sbc_discovery() ->
     ACLs = filter_acls(ecallmgr_config:get_json(<<"acls">>, kz_json:new(), <<"default">>)),
     CIDRs = sbc_cidrs(ACLs),
-    Nodes = [sbc_node(Node) || Node <- kz_nodes:with_role(<<"Proxy">>)],
+    Nodes = [sbc_node(Node) || Node <- kz_nodes:with_role(<<"Proxy">>, 'true')],
     case lists:foldl(fun(A, C) -> sbc_discover(A, CIDRs, C) end, [], Nodes) of
         [] -> 'ok';
         Updates ->
