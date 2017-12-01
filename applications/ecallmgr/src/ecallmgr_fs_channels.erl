@@ -436,8 +436,10 @@ start_cleanup_ref() ->
 %%--------------------------------------------------------------------
 -spec handle_call(any(), pid_ref(), state()) -> handle_call_ret_state(state()).
 handle_call({'new_channel', Channel}, _, State) ->
-    ets:insert(?CHANNELS_TBL, Channel),
-    {'reply', 'ok', State};
+    case ets:insert_new(?CHANNELS_TBL, Channel) of
+        'true'-> {'reply', 'ok', State};
+        'false' -> {'reply', {'error', 'channel_exists'}, State}
+    end;
 handle_call({'update_channel', UUID, Channel}, _, State) ->
     lager:debug("updating channel ~s", [UUID]),
     ets:insert(?CHANNELS_TBL, Channel),
