@@ -297,7 +297,6 @@ from_jobjs(JObjs) ->
 create(Nums, Options) ->
     T0 = pipe(do_get_pn(Nums
                        ,?OPTIONS_FOR_LOAD(Nums, props:delete(state, Options))
-                       ,knm_errors:to_json(not_reconcilable)
                        )
              ,[fun fail_if_assign_to_is_not_an_account_id/1
               ]),

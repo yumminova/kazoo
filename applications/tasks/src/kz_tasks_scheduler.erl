@@ -53,7 +53,11 @@
 -define(UPLOAD_ATTEMPTS,
         kapps_config:get_pos_integer(?CONFIG_CAT, <<"attempt_upload_output_times">>, 5)).
 
+%% `last_worker_update':
+%% Keeps track per `task_id' of the last counter at which a `worker update' has
+%% been performed. Mainly used at `worker_update_processed' handle_cast.
 -record(state, {tasks = #{} :: #{kz_tasks:id() => kz_tasks:task()}
+               ,last_worker_update = #{} :: #{kz_tasks:id() => non_neg_integer()}
                }).
 -type state() :: #state{}.
 
@@ -155,8 +159,7 @@ worker_pause() ->
 %%--------------------------------------------------------------------
 -spec worker_maybe_send_update(kz_tasks:id(), pos_integer(), pos_integer()) -> ok.
 worker_maybe_send_update(TaskId, Succeeded, Failed) ->
-    (Failed + Succeeded) rem ?PROGRESS_AFTER_PROCESSED =:= 0
-        andalso gen_server:cast(?SERVER, {worker_update_processed, TaskId, Succeeded, Failed}),
+    gen_server:cast(?SERVER, {worker_update_processed, TaskId, Succeeded, Failed}),
     ok.
 
 %%--------------------------------------------------------------------
@@ -350,8 +353,9 @@ handle_call({stop_task, TaskId}, _From, State) ->
                                  },
                     {ok, JObj} = update_task(Task1),
                     State1 = remove_task(TaskId, State),
+                    State2 = remove_last_worker_update(TaskId, State1),
                     kz_util:spawn(fun try_to_salvage_output/1, [TaskId]),
-                    ?REPLY_FOUND(State1, JObj)
+                    ?REPLY_FOUND(State2, JObj)
             end
     end;
 
@@ -381,7 +385,8 @@ handle_call({'worker_finished', TaskId, TotalSucceeded, TotalFailed}, _From, Sta
     %% This MUST happen before put_attachment or conflicts won't be resolved.
     {ok, _JObj} = update_task(Task1),
     State1 = remove_task(TaskId, State),
-    ?REPLY(State1, ok);
+    State2 = remove_last_worker_update(TaskId, State1),
+    ?REPLY(State2, ok);
 
 handle_call({'remove_task', TaskId}, _From, State) ->
     lager:debug("attempting to remove ~s", [TaskId]),
@@ -420,21 +425,29 @@ handle_cast({'worker_error', TaskId}, State) ->
                  },
     {'ok', _JObj} = update_task(Task1),
     State1 = remove_task(TaskId, State),
-    {'noreply', State1};
+    State2 = remove_last_worker_update(TaskId, State1),
+    {'noreply', State2};
 
 handle_cast({worker_update_processed, TaskId, TotalSucceeded, TotalFailed}, State) ->
-    lager:debug("worker update ~s: ~p/~p", [TaskId, TotalSucceeded, TotalFailed]),
-    case task_by_id(TaskId, State) of
-        undefined ->
+    #state{last_worker_update = #{TaskId := LastWorkerUpdate}} = State,
+    ProcessedSoFar = (TotalSucceeded + TotalFailed),
+    SendUpdate = ProcessedSoFar > (LastWorkerUpdate + ?PROGRESS_AFTER_PROCESSED),
+    case {SendUpdate, task_by_id(TaskId, State)} of
+        {_, undefined} ->
             %% Happens when there was a stop_task right before
             {noreply, State};
-        Task ->
+        {true, Task} ->
+            lager:info("worker update ~s: ~p/~p",
+                       [TaskId, TotalSucceeded, TotalFailed]),
             Task1 = Task#{total_rows_failed => TotalFailed
                          ,total_rows_succeeded => TotalSucceeded
                          },
             {ok, _JObj} = update_task(Task1),
             State1 = add_task(Task1, remove_task(TaskId, State)),
-            {noreply, State1}
+            State2 = set_last_worker_update(TaskId, ProcessedSoFar, State1),
+            {noreply, State2};
+        _ ->
+            {noreply, State}
     end;
 
 handle_cast(_Msg, State) ->
@@ -460,8 +473,9 @@ handle_info({'EXIT', Pid, _Reason}, State) ->
                  },
     {ok, _JObj} = update_task(Task1),
     State1 = remove_task(TaskId, State),
+    State2 = remove_last_worker_update(TaskId, State1),
     kz_util:spawn(fun try_to_salvage_output/1, [TaskId]),
-    {noreply, State1};
+    {noreply, State2};
 
 handle_info(_Info, State) ->
     lager:debug("unhandled message ~p", [_Info]),
@@ -550,7 +564,9 @@ handle_call_start_task(Task=#{id := TaskId
                          },
             {'ok', JObj} = update_task(Task1),
             State1 = add_task(Task1, State),
-            ?REPLY_FOUND(State1, JObj)
+            %% Initialize the `last_worker_update' value for this task
+            State2 = set_last_worker_update(TaskId, 0, State1),
+            ?REPLY_FOUND(State2, JObj)
     catch
         _E:_R ->
             lager:error("worker failed starting ~s: ~p", [TaskId, _R]),
@@ -560,6 +576,10 @@ handle_call_start_task(Task=#{id := TaskId
 -spec remove_task(kz_tasks:id(), state()) -> state().
 remove_task(TaskId, State=#state{tasks = Tasks}) ->
     State#state{tasks = maps:remove(TaskId, Tasks)}.
+
+-spec remove_last_worker_update(kz_tasks:id(), state()) -> state().
+remove_last_worker_update(TaskId, State = #state{last_worker_update = LWU}) ->
+    State#state{last_worker_update = maps:remove(TaskId, LWU)}.
 
 -spec add_task(kz_tasks:task(), state()) -> state().
 add_task(Task=#{id := TaskId}, State=#state{tasks = Tasks}) ->
@@ -575,6 +595,12 @@ update_task(Task = #{id := TaskId}) ->
             lager:error("failed to update ~s in ~s: ~p", [TaskId, ?KZ_TASKS_DB, _R]),
             E
     end.
+
+-spec set_last_worker_update(kz_tasks:id(), non_neg_integer(), state()) -> state().
+set_last_worker_update(TaskId,
+                       ProcessedSoFar,
+                       State = #state{last_worker_update = LWU}) ->
+    State#state{last_worker_update = LWU#{TaskId => ProcessedSoFar}}.
 
 -spec task_api(ne_binary(), ne_binary()) -> kz_json:object().
 task_api(Category, Action) ->
