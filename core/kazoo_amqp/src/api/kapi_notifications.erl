@@ -346,7 +346,7 @@
 -define(PORT_UNCONFIRMED_HEADERS, [<<"Account-ID">>]).
 -define(OPTIONAL_PORT_UNCONFIRMED_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                            ,<<"Number-State">>, <<"Local-Number">>
-                                           ,<<"Number">>, <<"Port">>, <<"Version">>
+                                           ,<<"Number">>, <<"Port">>, <<"Reason">>
                                                 | ?DEFAULT_OPTIONAL_HEADERS
                                            ]).
 -define(PORT_UNCONFIRMED_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -359,6 +359,7 @@
 -define(OPTIONAL_PORT_REQUEST_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                        ,<<"Number-State">>, <<"Local-Number">>
                                        ,<<"Number">>, <<"Port">>, <<"Version">>
+                                       ,<<"Reason">>
                                             | ?DEFAULT_OPTIONAL_HEADERS
                                        ]).
 -define(PORT_REQUEST_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -370,7 +371,7 @@
 -define(PORT_PENDING_HEADERS, [<<"Account-ID">>]).
 -define(OPTIONAL_PORT_PENDING_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                        ,<<"Number-State">>, <<"Local-Number">>
-                                       ,<<"Number">>, <<"Port">>, <<"Version">>
+                                       ,<<"Number">>, <<"Port">>, <<"Reason">>
                                             | ?DEFAULT_OPTIONAL_HEADERS
                                        ]).
 -define(PORT_PENDING_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -382,7 +383,7 @@
 -define(PORT_SCHEDULED_HEADERS, [<<"Account-ID">>]).
 -define(OPTIONAL_PORT_SCHEDULED_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                          ,<<"Number-State">>, <<"Local-Number">>
-                                         ,<<"Number">>, <<"Port">>, <<"Version">>
+                                         ,<<"Number">>, <<"Port">>, <<"Reason">>
                                               | ?DEFAULT_OPTIONAL_HEADERS
                                          ]).
 -define(PORT_SCHEDULED_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -395,6 +396,7 @@
 -define(OPTIONAL_PORT_REJECTED_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                         ,<<"Number-State">>, <<"Local-Number">>
                                         ,<<"Number">>, <<"Port">>
+                                        ,<<"Reason">>
                                              | ?DEFAULT_OPTIONAL_HEADERS
                                         ]).
 -define(PORT_REJECTED_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -407,6 +409,7 @@
 -define(OPTIONAL_PORT_CANCEL_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                       ,<<"Number-State">>, <<"Local-Number">>
                                       ,<<"Number">>, <<"Port">>
+                                      ,<<"Reason">>
                                            | ?DEFAULT_OPTIONAL_HEADERS
                                       ]).
 -define(PORT_CANCEL_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -416,8 +419,10 @@
 
 %% Notify Ported Request
 -define(PORTED_HEADERS, [<<"Account-ID">>]).
--define(OPTIONAL_PORTED_HEADERS, [<<"Number-State">>, <<"Local-Number">>, <<"Authorized-By">>, <<"Request">>
-                                 ,<<"Port-Request-ID">>, <<"Number">>, <<"Port">>
+-define(OPTIONAL_PORTED_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
+                                 ,<<"Number-State">>, <<"Local-Number">>
+                                 ,<<"Number">>, <<"Port">>
+                                 ,<<"Reason">>
                                       | ?DEFAULT_OPTIONAL_HEADERS
                                  ]).
 -define(PORTED_VALUES, [{<<"Event-Category">>, <<"notification">>}
@@ -427,8 +432,10 @@
 
 %% Notify Ported Request
 -define(PORT_COMMENT_HEADERS, [<<"Account-ID">>, <<"Comment">>]).
--define(OPTIONAL_PORT_COMMENT_HEADERS, [<<"Number-State">>, <<"Local-Number">>, <<"Authorized-By">>, <<"Request">>
-                                       ,<<"Port-Request-ID">>, <<"Number">>, <<"Port">>
+-define(OPTIONAL_PORT_COMMENT_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
+                                       ,<<"Number-State">>, <<"Local-Number">>
+                                       ,<<"Number">>, <<"Port">>
+                                       ,<<"Reason">>
                                             | ?DEFAULT_OPTIONAL_HEADERS
                                        ]).
 -define(PORT_COMMENT_VALUES, [{<<"Event-Category">>, <<"notification">>}
