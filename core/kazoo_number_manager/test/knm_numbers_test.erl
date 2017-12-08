@@ -87,14 +87,6 @@ create_test_() ->
     ].
 
 
-not_reconcilable() ->
-    kz_json:from_list(
-      [{<<"code">>, 500}
-      ,{<<"error">>, <<"unspecified_fault">>}
-      ,{<<"message">>, <<"not_reconcilable">>}
-      ]).
-
-
 create_new_test_() ->
     Num = ?TEST_TELNYX_NUM,
     Options = [{'auth_by', ?MASTER_ACCOUNT_ID}
@@ -102,7 +94,7 @@ create_new_test_() ->
               ,{<<"auth_by_account">>, kz_json:new()}
               ],
     Ret = knm_numbers:create([Num, ?NOT_NUM, ?TEST_CREATE_NUM], Options),
-    [?_assertEqual(#{?NOT_NUM => not_reconcilable()}, maps:get(ko, Ret))
+    [?_assertEqual(#{?NOT_NUM => not_reconcilable}, maps:get(ko, Ret))
     ,?_assertMatch([_, _], maps:get(ok, Ret))
     ,?_assertEqual(true, knm_number:is_number(n_x(1, Ret)))
     ,?_assertEqual(true, knm_number:is_number(n_x(2, Ret)))
