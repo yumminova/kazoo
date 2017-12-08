@@ -1611,7 +1611,7 @@ sanitize_public_fields(JObj) ->
                    (knm_phone_number()) -> boolean().
 is_authorized(T) when is_map(T) -> is_authorized_collection(T);
 is_authorized(#knm_phone_number{auth_by = ?KNM_DEFAULT_AUTH_BY}) ->
-    lager:info("bypassing auth"),
+    lager:debug("bypassing auth"),
     true;
 is_authorized(#knm_phone_number{auth_by = undefined}) -> false;
 is_authorized(#knm_phone_number{assigned_to = undefined

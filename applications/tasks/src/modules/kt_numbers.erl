@@ -768,9 +768,9 @@ list_assigned_to(AuthBy, [{Next,NumberDb}|Rest]) ->
     ViewOptions = [{limit,?DB_DUMP_BULK_SIZE} | view_for_list_assigned(Next)],
     case kz_datamgr:get_result_keys(NumberDb, <<"numbers/assigned_to">>, ViewOptions) of
         {ok, []} -> {ok, Rest};
-        {error, _R} ->
-            lager:error("could not get ~p's numbers in ~s: ~p", [ViewOptions, NumberDb, _R]),
-            {ok, Rest};
+        {error, R} ->
+            lager:error("could not get ~p's numbers in ~s: ~p", [ViewOptions, NumberDb, R]),
+            {error, Rest};
         {ok, Keys} ->
             Rows = list_numbers(AuthBy, [lists:last(Key) || Key <- Keys]),
             {Rows, [{lists:last(Keys),NumberDb}|Rest]}
@@ -795,9 +795,9 @@ dump_next(ViewFun, [Next|Rest]) ->
     ViewOptions = [{limit, ?DB_DUMP_BULK_SIZE} | MoreViewOptions],
     case kz_datamgr:get_result_keys(NumberDb, <<"numbers/status">>, ViewOptions) of
         {ok, []} -> {ok, Rest};
-        {error, _R} ->
-            lager:error("could not get ~p from ~s: ~p", [ViewOptions, NumberDb, _R]),
-            {ok, Rest};
+        {error, R} ->
+            lager:error("could not get ~p from ~s: ~p", [ViewOptions, NumberDb, R]),
+            {error, Rest};
         {ok, Keys} ->
             Rows = list_numbers(?KNM_DEFAULT_AUTH_BY, [lists:last(Key) || Key <- Keys]),
             {Rows, [lists:last(Keys)|Rest]}
