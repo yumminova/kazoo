@@ -435,7 +435,6 @@
 -define(OPTIONAL_PORT_COMMENT_HEADERS, [<<"Authorized-By">>, <<"Port-Request-ID">>
                                        ,<<"Number-State">>, <<"Local-Number">>
                                        ,<<"Number">>, <<"Port">>
-                                       ,<<"Reason">>
                                             | ?DEFAULT_OPTIONAL_HEADERS
                                        ]).
 -define(PORT_COMMENT_VALUES, [{<<"Event-Category">>, <<"notification">>}

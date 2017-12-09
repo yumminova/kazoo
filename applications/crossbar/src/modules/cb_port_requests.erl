@@ -1319,10 +1319,15 @@ send_port_scheduled_notification(Context, Id) ->
 
 -spec common_patch_notification_props(cb_context:context(), api_ne_binary()) -> kz_proplist().
 common_patch_notification_props(Context, ?NE_BINARY=Reason) ->
-    [{<<"Reason">>, Reason}
+    Props = [{<<"user_id">>, cb_context:auth_user_id(Context)}
+            ,{<<"account_id">>, cb_context:auth_account_id(Context)}
+            ,{<<"timestamp">>, kz_doc:modified(cb_context:doc(Context))}
+            ,{<<"content">>, Reason}
+            ],
+    [{<<"Reason">>, Props}
      | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
     ];
-common_patch_notification_props(Context, Reason) ->
+common_patch_notification_props(_, _) ->
     kz_api:default_headers(?APP_NAME, ?APP_VERSION).
 
 %%--------------------------------------------------------------------
