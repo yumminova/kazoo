@@ -1324,7 +1324,7 @@ common_patch_notification_props(Context, ?NE_BINARY=Reason) ->
             ,{<<"timestamp">>, kz_doc:modified(cb_context:doc(Context))}
             ,{<<"content">>, Reason}
             ],
-    [{<<"Reason">>, Props}
+    [{<<"Reason">>, kz_json:from_list(Props)}
      | kz_api:default_headers(?APP_NAME, ?APP_VERSION)
     ];
 common_patch_notification_props(_, _) ->

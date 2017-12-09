@@ -205,7 +205,7 @@ maybe_add_reason(JObj, DataJObj) ->
                     ,{<<"date">>, Date}
                     ,{<<"user">>, kz_json:from_list(UserInfo)}
                     ],
-            kz_json:set_values(<<"transition_reason">>, Props, JObj)
+            kz_json:set_value(<<"transition_reason">>, kz_json:from_list(Props), JObj)
     end.
 
 -spec get_commenter_info(api_ne_binary(), api_ne_binary()) -> kz_proplist().
