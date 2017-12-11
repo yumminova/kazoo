@@ -15946,6 +15946,9 @@
                 "Preview": {
                     "type": "string"
                 },
+                "Reason": {
+                    "type": "string"
+                },
                 "Reply-To": {
                     "type": "string"
                 },
@@ -16102,6 +16105,9 @@
                 "Preview": {
                     "type": "string"
                 },
+                "Reason": {
+                    "type": "string"
+                },
                 "Reply-To": {
                     "type": "string"
                 },
@@ -16180,6 +16186,9 @@
                 "Preview": {
                     "type": "string"
                 },
+                "Reason": {
+                    "type": "string"
+                },
                 "Reply-To": {
                     "type": "string"
                 },
@@ -16253,6 +16262,9 @@
                     "type": "string"
                 },
                 "Preview": {
+                    "type": "string"
+                },
+                "Reason": {
                     "type": "string"
                 },
                 "Reply-To": {
@@ -16333,6 +16345,9 @@
                 "Preview": {
                     "type": "string"
                 },
+                "Reason": {
+                    "type": "string"
+                },
                 "Reply-To": {
                     "type": "string"
                 },
@@ -16411,6 +16426,9 @@
                 "Preview": {
                     "type": "string"
                 },
+                "Reason": {
+                    "type": "string"
+                },
                 "Reply-To": {
                     "type": "string"
                 },
@@ -16487,6 +16505,9 @@
                     "type": "string"
                 },
                 "Preview": {
+                    "type": "string"
+                },
+                "Reason": {
                     "type": "string"
                 },
                 "Reply-To": {
