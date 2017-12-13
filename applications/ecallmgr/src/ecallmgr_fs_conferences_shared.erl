@@ -186,7 +186,7 @@ maybe_exec_dial(ConferenceNode, ConferenceId, JObj, Endpoints, Loopbacks) ->
 
     handle_responses(ConferenceNode, JObj, EPResps ++ LBResps).
 
--type exec_response() :: {ne_binary(), kz_proplist()}.
+-type exec_response() :: {api_ne_binary(), kz_proplist()}.
 -type exec_responses() :: [exec_response()].
 -spec exec_endpoints(atom(), ne_binary(), kz_json:object(), kz_json:objects()) ->
                             exec_responses().
@@ -239,7 +239,7 @@ exec_endpoint(Endpoint, {ConferenceNode, ConferenceId, JObj, Resps}) ->
             {ConferenceNode, ConferenceId, JObj, [{EndpointCallId, error_resp(EndpointId, E)} | Resps]};
         'throw':Msg when is_binary(Msg) ->
             lager:info("failed to exec: ~s", [Msg]),
-            {ConferenceNode, ConferenceId, JObj, [{EndpointCallId, error_resp(EndpointId, Msg)} | Resps]}
+            {ConferenceNode, ConferenceId, JObj, [{'undefined', error_resp(EndpointId, Msg)} | Resps]}
     end.
 
 -spec exec_loopbacks(atom(), ne_binary(), kz_json:object(), kz_json:objects()) ->
@@ -294,6 +294,8 @@ handle_responses(ConferenceNode, JObj, Responses) ->
     publish_resp(JObj, BaseResponses).
 
 -spec handle_response(atom(), kz_json:object(), exec_response()) -> kz_proplist().
+handle_response(_ConferenceNode, _JObj, {'undefined', Resp}) ->
+    Resp;
 handle_response(ConferenceNode, JObj, {LoopbackCallId, Resp}) ->
     BuiltResp =
         case wait_for_bowout(LoopbackCallId
