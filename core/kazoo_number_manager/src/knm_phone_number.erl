@@ -530,7 +530,7 @@ delete(T=#{todo := PNs, options := Options}) ->
                                 ])
     end.
 
--spec log_permanent_deletion(knm_numbers:pn_collection()) -> knm_numbers:pn_collection().
+-spec log_permanent_deletion(knm_numbers:collection()) -> knm_numbers:collection().
 log_permanent_deletion(T=#{todo := PNs}) ->
     F = fun (_PN) -> ?LOG_DEBUG("deleting permanently ~s", [number(_PN)]) end,
     lists:foreach(F, PNs),
@@ -1611,7 +1611,7 @@ sanitize_public_fields(JObj) ->
                    (knm_phone_number()) -> boolean().
 is_authorized(T) when is_map(T) -> is_authorized_collection(T);
 is_authorized(#knm_phone_number{auth_by = ?KNM_DEFAULT_AUTH_BY}) ->
-    lager:debug("bypassing auth"),
+    lager:info("bypassing auth"),
     true;
 is_authorized(#knm_phone_number{auth_by = undefined}) -> false;
 is_authorized(#knm_phone_number{assigned_to = undefined

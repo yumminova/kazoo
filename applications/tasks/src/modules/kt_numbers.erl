@@ -763,13 +763,13 @@ format_result(_, N) ->
 
 -type accountid_or_startkey_and_numberdbs() :: [{ne_binary() | ne_binaries(), ne_binary()}].
 -spec list_assigned_to(ne_binary(), accountid_or_startkey_and_numberdbs()) ->
-                              {ok | [kz_csv:row()], accountid_or_startkey_and_numberdbs()}.
+                              {ok | error  | [kz_csv:row()], accountid_or_startkey_and_numberdbs()}.
 list_assigned_to(AuthBy, [{Next,NumberDb}|Rest]) ->
     ViewOptions = [{limit,?DB_DUMP_BULK_SIZE} | view_for_list_assigned(Next)],
     case kz_datamgr:get_result_keys(NumberDb, <<"numbers/assigned_to">>, ViewOptions) of
         {ok, []} -> {ok, Rest};
-        {error, R} ->
-            lager:error("could not get ~p's numbers in ~s: ~p", [ViewOptions, NumberDb, R]),
+        {error, _R} ->
+            lager:error("could not get ~p's numbers in ~s: ~p", [ViewOptions, NumberDb, _R]),
             {error, Rest};
         {ok, Keys} ->
             Rows = list_numbers(AuthBy, [lists:last(Key) || Key <- Keys]),
@@ -789,14 +789,14 @@ view_for_list_assigned(StartKey=[AccountId,_]) ->
 
 -type startkey_or_numberdb() :: ne_binary() | ne_binaries().
 -spec dump_next(fun((startkey_or_numberdb()) -> {ne_binary(), kz_datamgr:view_options()}), startkey_or_numberdb()) ->
-                       {ok | [kz_csv:row()], [startkey_or_numberdb()]}.
+                       {ok | error | [kz_csv:row()], [startkey_or_numberdb()]}.
 dump_next(ViewFun, [Next|Rest]) ->
     {NumberDb, MoreViewOptions} = ViewFun(Next),
     ViewOptions = [{limit, ?DB_DUMP_BULK_SIZE} | MoreViewOptions],
     case kz_datamgr:get_result_keys(NumberDb, <<"numbers/status">>, ViewOptions) of
         {ok, []} -> {ok, Rest};
-        {error, R} ->
-            lager:error("could not get ~p from ~s: ~p", [ViewOptions, NumberDb, R]),
+        {error, _R} ->
+            lager:error("could not get ~p from ~s: ~p", [ViewOptions, NumberDb, _R]),
             {error, Rest};
         {ok, Keys} ->
             Rows = list_numbers(?KNM_DEFAULT_AUTH_BY, [lists:last(Key) || Key <- Keys]),
