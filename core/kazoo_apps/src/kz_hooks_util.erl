@@ -246,7 +246,8 @@ lookup_account_id(JObj) ->
         Id -> {'ok', Id}
     end.
 
--spec fetch_account_id(ne_binary()) -> {'ok', ne_binary()} | {'error', any()}.
+-spec fetch_account_id(api_binary()) -> {'ok', ne_binary()} | {'error', any()}.
+fetch_account_id('undefined') -> {'error', 'not_found'};
 fetch_account_id(Number) ->
     case knm_number:lookup_account(Number) of
         {'ok', AccountId, _} ->
