@@ -90,7 +90,9 @@ send_transfer(JObj, ControllerQ, Reconcilable, Number) ->
 maybe_send_bridge(JObj, ControllerQ, Reconcilable, Type) ->
     AccountId = kapps_config:get_ne_binary(?CONFIG_CAT, [Type, <<"bridge_account_id">>]),
     EndpointId = kapps_config:get_ne_binary(?CONFIG_CAT, [Type, <<"bridge_endpoint_id">>]),
-    case kz_term:is_empty(AccountId) orelse kz_term:is_empty(EndpointId) of
+    case kz_term:is_empty(AccountId) 
+        orelse kz_term:is_empty(EndpointId) 
+    of
         'true' -> send_response(JObj, ControllerQ, Reconcilable, Type);
         'false' ->
             Routines = [{fun kapps_call:set_account_id/2, AccountId}],
