@@ -34,7 +34,7 @@ create_conference(JObj) ->
                        ,{fun kapps_conference:set_id/2, ConferenceId}
                        ],
             kapps_conference:update(Routines, Conference);
-        _Else -> 
+        _Else ->
             Routines = [{fun kapps_conference:set_profile_name/2, ProfileName}],
             kapps_conference:update(Routines, Conference)
     end.

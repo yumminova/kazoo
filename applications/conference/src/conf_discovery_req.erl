@@ -75,12 +75,12 @@ maybe_collect_conference_id(Srv, Conference) ->
     end.
 
 -spec collect_conference_id(pid(), kapps_conference:conference()) ->
-                                    {'ok', kapps_conference:conference()} | 'ok'.
+                                   {'ok', kapps_conference:conference()} | 'ok'.
 collect_conference_id(Srv, Conference) ->
     collect_conference_id(Srv, Conference, 1).
 
 -spec collect_conference_id(pid(), kapps_conference:conference(), pos_integer()) ->
-                                    {'ok', kapps_conference:conference()} | 'ok'.
+                                   {'ok', kapps_conference:conference()} | 'ok'.
 collect_conference_id(Srv, Conference, Loop) when Loop > 3 ->
     lager:debug("caller has failed to provide a valid conference number to many times"),
     Call = kapps_conference:call(Conference),
@@ -117,11 +117,11 @@ validate_collected_conference_id(Srv, Conference, Loop, Digits) ->
             lager:debug("could not find conference number ~s: ~p", [Digits, _Else]),
             _ = kapps_call_command:prompt(<<"conf-bad_conf">>, Call),
             collect_conference_id(Srv, Conference, Loop + 1)
-   end.
+    end.
 
 -spec valid_conference_id(pid(), kapps_conference:conference(), binary()) ->
-                                     {'ok', kapps_conference:conference()} |
-                                     {'error', any()}.
+                                 {'ok', kapps_conference:conference()} |
+                                 {'error', any()}.
 valid_conference_id(Srv, Conference, Digits) ->
     JObj = kapps_conference:discovery_request(Conference),
     ModeratorNumbers = kz_json:get_value([<<"moderator">>, <<"numbers">>], JObj, []),
@@ -144,7 +144,7 @@ valid_conference_id(Srv, Conference, Digits) ->
             maybe_collect_conference_pin(Conference2, Call, Srv);
         %% the conference number is ambiguous regarding member: either both have the same number
         %%   or they joined by the discovery event having the conference id
-        _Else -> 
+        _Else ->
             Conference1 = maybe_set_conference_tones(Conference, JObj),
             Call = kapps_conference:call(Conference1),
             maybe_collect_conference_pin(Conference1, Call, Srv)
